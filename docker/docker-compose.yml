@@ -1,0 +1,46 @@
+name: ruglens
+
+services:
+  ruglens:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: ruglens:local
+    init: true
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      RUGLENS_DATA_DIR: /data
+      RUGLENS_RPC_URL_ETHEREUM: ${RUGLENS_RPC_URL_ETHEREUM:-https://ethereum-rpc.publicnode.com}
+      RUGLENS_RPC_URL_BSC: ${RUGLENS_RPC_URL_BSC:-https://bsc-dataseed.binance.org}
+      RUGLENS_RPC_URL_BASE: ${RUGLENS_RPC_URL_BASE:-https://mainnet.base.org}
+      RUGLENS_RPC_URL_SOLANA: ${RUGLENS_RPC_URL_SOLANA:-https://api.mainnet-beta.solana.com}
+      RUGLENS_SIMULATION_CONCURRENCY: ${RUGLENS_SIMULATION_CONCURRENCY:-1}
+      RUGLENS_SIMULATION_TIMEOUT: ${RUGLENS_SIMULATION_TIMEOUT:-60}
+      RUGLENS_API_MAX_CONCURRENT: ${RUGLENS_API_MAX_CONCURRENT:-1}
+      RUGLENS_API_ALLOW_CUSTOM_RPC: "false"
+      RUGLENS_API_ALLOW_PRIVATE_RPC: "false"
+      RUGLENS_PLUGINS_ENABLED: ${RUGLENS_PLUGINS_ENABLED:-true}
+      RUGLENS_SLITHER_ENABLED: "false"
+    volumes:
+      - ruglens-data:/data
+    cpus: 2.0
+    mem_limit: 1536m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/v1/health', timeout=3).read()"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 25s
+
+volumes:
+  ruglens-data:

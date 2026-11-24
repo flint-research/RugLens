@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RugLens Golden Dataset Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "token_address",
+    "chain_id",
+    "deployment_block",
+    "ground_truth_label",
+    "source_provenance"
+  ],
+  "properties": {
+    "token_address": {
+      "type": "string",
+      "anyOf": [
+        {"pattern": "^0x[0-9a-fA-F]{40}$"},
+        {"pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"}
+      ]
+    },
+    "chain_id": {"type": "integer", "minimum": 1},
+    "deployment_block": {"type": "integer", "minimum": 0},
+    "evaluation_block": {"type": ["integer", "null"], "minimum": 0},
+    "ground_truth_label": {"type": "string", "pattern": "^(BENIGN|SCAM_[A-Z0-9_]+)$"},
+    "contract_family_id": {"type": ["string", "null"]},
+    "verified_source": {"type": "boolean"},
+    "source_provenance": {"type": "string", "minLength": 1},
+    "notes": {"type": "string"},
+    "bytecode": {"type": ["string", "null"], "pattern": "^0x[0-9a-fA-F]*$"}
+  }
+}
